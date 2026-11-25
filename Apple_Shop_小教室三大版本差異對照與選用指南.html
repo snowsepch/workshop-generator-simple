@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>Apple Shop 小教室三大版本架構差異與選用指南</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 14mm 14mm 14mm 14mm;
+  }
+  
+  :root {
+    --bg-canvas: #FAFAF8;
+    --bg-card: #FFFFFF;
+    --border-subtle: #E8E8E5;
+    --border-medium: #D8D8D4;
+    --border-dark: #18181B;
+    --text-primary: #18181B;
+    --text-secondary: #52525B;
+    --text-muted: #71717A;
+    --accent-blue: #0284C7;
+    --accent-warm: #C8442E;
+    --accent-tag: #0369A1;
+    --tag-bg-blue: #E0F2FE;
+    --tag-bg-amber: #FEF3C7;
+    --tag-ink-amber: #92400E;
+    --tag-bg-green: #DCFCE7;
+    --tag-ink-green: #166534;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang TC", "Noto Sans TC", sans-serif;
+    background: var(--bg-canvas);
+    color: var(--text-primary);
+    line-height: 1.75;
+    letter-spacing: 0.02em;
+    -webkit-font-smoothing: antialiased;
+    padding: 24px 16px;
+  }
+
+  .page-container {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border: 1px solid var(--border-medium);
+    border-radius: 12px;
+    padding: 38px 42px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  }
+
+  /* 頂部 Header */
+  .doc-header {
+    border-bottom: 2px solid var(--border-dark);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+  .doc-badge-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .badge-primary { background: #09090B; color: #FFFFFF; }
+  .badge-neutral { background: #F1F1EE; color: #52525B; border: 1px solid var(--border-medium); }
+  
+  .doc-title {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .doc-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* 核心摘要 Bento 卡片 (3欄) */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .bento-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-medium);
+    border-radius: 10px;
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .bento-card.highlight {
+    background: #F0F9FF;
+    border-color: #BAE6FD;
+  }
+  .card-top {
+    margin-bottom: 10px;
+  }
+  .card-tag {
+    font-size: 10.5px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+  .card-foot {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 8px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .card-link-title {
+    font-size: 10.5px;
+    color: var(--text-muted);
+  }
+  .card-link {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    text-decoration: none;
+    word-break: break-all;
+    line-height: 1.4;
+  }
+
+  /* 區塊標題 */
+  .section-hd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15.5px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 22px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1.5px solid var(--border-medium);
+  }
+  .section-hd .num {
+    background: var(--text-primary);
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+
+  /* 決策樹情境卡 */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .decision-box {
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: 13px 14px;
+    background: #fff;
+  }
+  .decision-target {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent-blue);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .decision-condition {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+  .decision-action {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* 橫向對照表 */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+    margin-bottom: 18px;
+  }
+  .comp-table th, .comp-table td {
+    padding: 8px 11px;
+    border: 1px solid var(--border-medium);
+    text-align: left;
+    vertical-align: middle;
+    line-height: 1.55;
+  }
+  .comp-table th {
+    background: #F4F4F1;
+    font-weight: 800;
+    color: var(--text-primary);
+    white-space: nowrap;
+    padding: 9px 11px;
+  }
+  .comp-table th.col-simple {
+    background: #E0F2FE;
+    color: #0369A1;
+    border-color: #BAE6FD;
+  }
+  .comp-table td.col-simple {
+    background: #F8FAFC;
+    font-weight: 500;
+  }
+  .comp-table tr:nth-child(even) td {
+    background-color: #FAFAF8;
+  }
+  .comp-table tr:nth-child(even) td.col-simple {
+    background-color: #F0F9FF;
+  }
+  .pill {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .pill-green { background: var(--tag-bg-green); color: var(--tag-ink-green); }
+  .pill-amber { background: var(--tag-bg-amber); color: var(--tag-ink-amber); }
+  .pill-blue { background: var(--tag-bg-blue); color: var(--tag-ink-blue); }
+
+  /* 頁面架構解剖 */
+  .anatomy-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .anatomy-box {
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: var(--bg-canvas);
+  }
+  .anatomy-box h4 {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-medium);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .flow-list {
+    list-style: none;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+  }
+  .flow-list li {
+    padding: 4.5px 0;
+    border-bottom: 1px dashed var(--border-subtle);
+    display: flex;
+    align-items: flex-start;
+  }
+  .flow-list li:last-child { border-bottom: none; }
+  .flow-label {
+    width: 105px;
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  .flow-desc {
+    flex: 1;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Footer 聲明與驗證 */
+  .doc-footer {
+    border-top: 1.5px solid var(--border-medium);
+    padding-top: 14px;
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .print-btn-bar {
+    text-align: right;
+    margin-bottom: 14px;
+  }
+  .btn-print {
+    background: #09090B;
+    color: #FFFFFF;
+    border: none;
+    padding: 7px 15px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-print:hover { background: #27272A; }
+
+  /* 精確分頁控制 */
+  .page-break-before {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  @media print {
+    body { background: #FFFFFF; padding: 0; }
+    .page-container {
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      max-width: 100%;
+    }
+    .print-btn-bar { display: none; }
+    .page-break-before {
+      page-break-before: always;
+      break-before: page;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <div class="print-btn-bar">
+    <button class="btn-print" onclick="window.print()">🖨 一鍵列印 / 存為 PDF</button>
+  </div>
+
+  <!-- ===== PAGE 1: 封面、三大版本快覽與選用決策樹 ===== -->
+  <div class="doc-header">
+    <div class="doc-badge-row">
+      <span class="badge badge-primary">Apple Shop 通路專員工具箱 · 官方體系</span>
+      <span class="badge badge-neutral">版本更新日期：2026 年 11 月 25 日</span>
+    </div>
+    <h1 class="doc-title">Apple Shop 小教室三大版本架構差異與選用指南</h1>
+    <div class="doc-sub">
+      針對門市不同帶課情境，將小教室系統徹底切分為三套獨立工具。本文件提供架構對照、規格參數、適用客群與選用決策樹，方便第一線專員精準選擇、快速上手。
+    </div>
+  </div>
+
+  <!-- 三大版本 Bento 快覽卡片 -->
+  <div class="grid-3">
+    <!-- 懶人包版 -->
+    <div class="bento-card">
+      <div class="card-top">
+        <div class="card-tag" style="color:#C8442E">極簡快速型 · 固定 6 頁</div>
+        <div class="card-title">📑 懶人包版</div>
+        <div class="card-desc">
+          <b>兩欄式極簡填表</b>。左側表單直接輸入文字與上傳照片，每主題固定 6 頁、每頁一句重點。採用印刷柔彩 INKLO 暖米白視覺（#ECE5D7），三秒生出投影片。
+        </div>
+      </div>
+      <div class="card-foot">
+        <div class="card-link-title">專屬獨立網址：</div>
+        <a class="card-link" href="https://snowsepch.github.io/workshop-lazypack/" target="_blank">snowsepch.github.io/workshop-lazypack/</a>
+      </div>
+    </div>
+
+    <!-- 簡易實戰版 (推薦) -->
+    <div class="bento-card highlight">
+      <div class="card-top">
+        <div class="card-tag" style="color:#0284C7">實戰口條型 · 精緻 8 頁 ★推薦</div>
+        <div class="card-title">📱 簡易實戰版</div>
+        <div class="card-desc">
+          <b>三欄自適應工作舞台</b>。精緻 8 頁實戰架構，<b>投影片正下方即時對照本頁講師備忘錄</b>（轉場話術/提問句）。標註新手入門安全牌（★☆☆），課前速覽卡無黑紋。
+        </div>
+      </div>
+      <div class="card-foot">
+        <div class="card-link-title">專屬獨立網址：</div>
+        <a class="card-link" href="https://snowsepch.github.io/workshop-generator-simple/" target="_blank">snowsepch.github.io/workshop-generator-simple/</a>
+      </div>
+    </div>
+
+    <!-- Grok 版 -->
+    <div class="bento-card">
+      <div class="card-top">
+        <div class="card-tag" style="color:#52525B">旗艦擴充型 · 全功能</div>
+        <div class="card-title">🚀 Grok 旗艦版</div>
+        <div class="card-desc">
+          <b>全功能行銷工作站</b>。整合「一句話 AI 智能配課」、「官網文字自動解析預填」、「300dpi 開課海報」與「社群文案」一條龍產出。適合店長與全月排課。
+        </div>
+      </div>
+      <div class="card-foot">
+        <div class="card-link-title">專屬獨立網址：</div>
+        <a class="card-link" href="https://snowsepch.github.io/workshop-generator-grok/" target="_blank">snowsepch.github.io/workshop-generator-grok/</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 門市選用決策樹 -->
+  <div class="section-hd">
+    <span class="num">1</span>
+    <span>門市專員選用決策指引（依照帶課時機挑選）</span>
+  </div>
+
+  <div class="decision-grid">
+    <div class="decision-box">
+      <div class="decision-target">⏱ 情境 A · 趕著上台</div>
+      <div class="decision-condition">明天就要帶課、只想改名字換照片</div>
+      <div class="decision-action">
+        👉 選擇 <b>【懶人包版】</b><br>
+        不必學習三欄介面，左側表單直接填店名、講師與照片，6 頁架構三秒匯出 PPTX，輕鬆上陣。
+      </div>
+    </div>
+
+    <div class="decision-box" style="border-color:#BAE6FD; background:#F0F9FF;">
+      <div class="decision-target" style="color:#0369A1">🎤 情境 B · 新手講師實戰（強推）</div>
+      <div class="decision-condition">第一次帶課怕冷場、需要備忘錄話術</div>
+      <div class="decision-action">
+        👉 選擇 <b>【簡易實戰版】</b><br>
+        預覽下方即時連動提問話術，專挑「★☆☆ 入門安全牌」課綱，搭配課前 3 分鐘速覽卡掌握時間配速。
+      </div>
+    </div>
+
+    <div class="decision-box">
+      <div class="decision-target" style="color:#52525B">🗓 情境 C · 月度行銷與新課</div>
+      <div class="decision-condition">規劃整月課表、需要印海報與發文案</div>
+      <div class="decision-action">
+        👉 選擇 <b>【Grok 旗艦版】</b><br>
+        用一句話 AI 智能配出系列課，貼上官網文字自訂新產品課綱，一鍵匯出 A4 海報與 LINE@ 推播文案。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 2: 功能規格橫向完整對照矩陣 (分頁開始) ===== -->
+  <div class="page-break-before"></div>
+
+  <div class="section-hd" style="margin-top:0;">
+    <span class="num">2</span>
+    <span>完整功能規格與架構對照表</span>
+  </div>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th style="width:18%">比較維度</th>
+        <th style="width:27%">📑 懶人包版 (lazypack)</th>
+        <th style="width:28%" class="col-simple">📱 簡易實戰版 (simple) ★推薦</th>
+        <th style="width:27%">🚀 Grok 旗艦版 (grok)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>主要定位</b></td>
+        <td>1 分鐘極簡快速出簡報</td>
+        <td class="col-simple"><b>新手講師實戰帶課利器</b></td>
+        <td>全通路行銷與深度自訂工作站</td>
+      </tr>
+      <tr>
+        <td><b>版面排版結構</b></td>
+        <td>兩欄式（左側表單 420px，右側簡報）</td>
+        <td class="col-simple"><b>三欄舞台（主題 300px / 簡報 / 客群 280px）</b></td>
+        <td>三欄舞台（主題 300px / 簡報 / 客群 280px）</td>
+      </tr>
+      <tr>
+        <td><b>單一主題投影片數</b></td>
+        <td><span class="pill pill-amber">固定 6 頁</span>（每頁一句重點）</td>
+        <td class="col-simple"><span class="pill pill-blue">精緻 8 頁實戰架構</span>（含對比避坑）</td>
+        <td><span class="pill">標準 4 頁</span>（可擴充彈性頁）</td>
+      </tr>
+      <tr>
+        <td><b>視覺美學風格</b></td>
+        <td>印刷柔彩 INKLO（暖米白底色 #ECE5D7）</td>
+        <td class="col-simple"><b>柔和淺色科技風（清爽灰白 #F8FAFC）</b></td>
+        <td>柔和淺色科技風（清爽灰白 #F8FAFC）</td>
+      </tr>
+      <tr>
+        <td><b>主題庫收納量</b></td>
+        <td>68 門主題</td>
+        <td class="col-simple"><b>60 門嚴校主題（含 Watch S12 官方體系）</b></td>
+        <td>61 門主題（含 Watch S12 官方體系）</td>
+      </tr>
+      <tr>
+        <td><b>本頁講師備忘錄</b></td>
+        <td>❌ 僅下載 PPTX 內嵌備忘稿</td>
+        <td class="col-simple"><span class="pill pill-green">✅ 預覽正下方即時零時差同步</span></td>
+        <td><span class="pill pill-green">✅ 預覽正下方即時零時差同步</span></td>
+      </tr>
+      <tr>
+        <td><b>難度等級星號標記</b></td>
+        <td>❌ 無分級標註</td>
+        <td class="col-simple"><b>明確正名：入門 ★☆☆ / 中階 ★★☆ / 進階 ★★★</b></td>
+        <td>門市推薦指數星號</td>
+      </tr>
+      <tr>
+        <td><b>課前 3 分鐘速覽卡</b></td>
+        <td>✅ 有（配速表/設備清單/救援Q&A）</td>
+        <td class="col-simple"><span class="pill pill-green">✅ 有（徹底移除模糊，零直黑紋破圖）</span></td>
+        <td><span class="pill pill-green">✅ 有（已同步修復，零直黑紋破圖）</span></td>
+      </tr>
+      <tr>
+        <td><b>AI 一句話智能配課</b></td>
+        <td>❌ 無</td>
+        <td class="col-simple">✅ 具備智能推薦按鈕</td>
+        <td><span class="pill pill-blue">✅ 具備一句話描述智能配課 Modal</span></td>
+      </tr>
+      <tr>
+        <td><b>官網文字快速解析</b></td>
+        <td>❌ 無（左側手動改字）</td>
+        <td class="col-simple">✅ 支援官網文字解析預填</td>
+        <td><span class="pill pill-blue">✅ 複製官網文字貼上自動拆解規格</span></td>
+      </tr>
+      <tr>
+        <td><b>宣傳海報與社群文案</b></td>
+        <td>❌ 無（純簡報與列印備課單）</td>
+        <td class="col-simple">✅ 具備海報與社群文案彈窗</td>
+        <td><span class="pill pill-blue">✅ 300dpi A4 海報與多通路社群文案</span></td>
+      </tr>
+      <tr>
+        <td><b>專屬 GitHub 儲存庫</b></td>
+        <td><code>snowsepch/workshop-lazypack</code></td>
+        <td class="col-simple"><code>snowsepch/workshop-generator-simple</code></td>
+        <td><code>snowsepch/workshop-generator-grok</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ===== PAGE 3: 頁面結構深度解剖與頁尾 (分頁開始) ===== -->
+  <div class="page-break-before"></div>
+
+  <div class="section-hd" style="margin-top:0;">
+    <span class="num">3</span>
+    <span>單堂簡報頁面結構深度解剖</span>
+  </div>
+
+  <div class="anatomy-row">
+    <div class="anatomy-box">
+      <h4>
+        <span>📑 懶人包版 · 6 頁極簡流</span>
+        <span class="badge badge-neutral">快速交付</span>
+      </h4>
+      <ul class="flow-list">
+        <li>
+          <span class="flow-label">01 封面：</span>
+          <span class="flow-desc">課程主題、副標題、講師姓名、門市名稱。</span>
+        </li>
+        <li>
+          <span class="flow-label">02 這堂課重點：</span>
+          <span class="flow-desc">一句話核心帶走收穫、生活情境、系統版本。</span>
+        </li>
+        <li>
+          <span class="flow-label">03 核心三招：</span>
+          <span class="flow-desc">三個最常用功能特色卡片。</span>
+        </li>
+        <li>
+          <span class="flow-label">04 一起動手做：</span>
+          <span class="flow-desc">具體操作示範與實拍照片對照。</span>
+        </li>
+        <li>
+          <span class="flow-label">05 帶回家一句話：</span>
+          <span class="flow-desc">課後練習小挑戰、實踐金句。</span>
+        </li>
+        <li>
+          <span class="flow-label">06 推薦配件：</span>
+          <span class="flow-desc">原廠保護殼、充電器等官方配件推薦。</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="anatomy-box" style="border-color:#BAE6FD; background:#F8FAFC;">
+      <h4>
+        <span style="color:#0369A1">📱 簡易實戰版 · 8 頁深度帶領流</span>
+        <span class="badge badge-primary">新手防呆</span>
+      </h4>
+      <ul class="flow-list">
+        <li>
+          <span class="flow-label">01 開場歡迎：</span>
+          <span class="flow-desc">破冰話術、型號確認、今天三個收穫。</span>
+        </li>
+        <li>
+          <span class="flow-label">02 課程重點：</span>
+          <span class="flow-desc">一句話總結、硬體數據指標、生活痛點共鳴。</span>
+        </li>
+        <li>
+          <span class="flow-label">03 核心亮點：</span>
+          <span class="flow-desc">三大功能解析、系統相容性細項需求。</span>
+        </li>
+        <li>
+          <span class="flow-label">04 生活應用：</span>
+          <span class="flow-desc">四大真實生活情境對照（通勤/家庭/工作/健康）。</span>
+        </li>
+        <li>
+          <span class="flow-label">05 一起動手做：</span>
+          <span class="flow-desc">具體設定操作路徑（例如 設定 ➔ 相機 ➔ ...）。</span>
+        </li>
+        <li>
+          <span class="flow-label">06 對比避坑卡：</span>
+          <span class="flow-desc">Before 痛點 vs After 成果、2 個最常做錯的坑。</span>
+        </li>
+        <li>
+          <span class="flow-label">07 需求導向配件：</span>
+          <span class="flow-desc">為什麼需要的生活化推坑痛點話術。</span>
+        </li>
+        <li>
+          <span class="flow-label">08 帶回家實踐：</span>
+          <span class="flow-desc">課後練習金句、現場一對一解惑引導。</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 頁尾宣告與安全查核 -->
+  <div class="doc-footer">
+    <div>
+      <b>版權檢查與規格宣告</b>：本文件為 Apple Shop 小教室內部專案架構指南 · 100% 離線純 HTML 運算 · 零外連追蹤代碼 · 遵循台灣繁體正體標準與 Apple 原廠規格。
+    </div>
+    <div style="font-weight:700;">
+      燦坤 3C 右昌店 2F Apple Shop 專櫃體系
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
